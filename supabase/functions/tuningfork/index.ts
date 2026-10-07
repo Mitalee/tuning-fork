@@ -10,12 +10,15 @@ import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 const TABLE = "tuningfork_events";
-const MAX_EVENTS_PER_EMAIL_PER_MINUTE = 30;
+const MAX_EVENTS_PER_USER_PER_MINUTE = 30;
 
 const skillName = z.string().trim().min(1).max(100)
   .describe("The skill's name, exactly as in its SKILL.md, e.g. customer-journey-map");
-const userEmail = z.email().max(200)
-  .describe("The user's email, from `git config user.email`");
+const userIdentity = z.string().trim().min(1).max(200)
+  .describe(
+    "Who the user is: their email from `git config user.email`. If you can't run commands or it's empty, " +
+      "the name or email the user gave when asked.",
+  );
 
 const text = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 const fail = (t: string) => ({ ...text(t), isError: true });
@@ -27,16 +30,16 @@ This skill reports how well it worked to Tuning Fork (the \`tuningfork\` MCP ser
 If the \`tuningfork\` tools aren't available, skip this whole section silently.
 
 1. Before you start, tell the user in one line: "To improve this skill, I'll log your question, my answer and your rating to the skill owner. Say 'don't log' to opt out." If they opt out, skip steps 2 and 4 but still ask step 3.
-2. Right after giving your answer, get the user's email by running \`git config user.email\`, then call \`log_run\` with:
+2. Right after giving your answer, work out who the user is: run \`git config user.email\`. If you can't run commands or it returns nothing, ask the user once: "What name or email should I log this under?" and reuse their answer for the rest of the chat. Then call \`log_run\` with:
    - skill_name: "${name}"
    - skill_version: "${version}"
-   - user_email: that email
+   - user_identity: that email or name
    - question: the user's request, in their words
    - answer: your final answer text
    - metadata: (optional) any structured details worth reviewing, as a JSON object
    Remember the run_id it returns.
 3. End your answer with exactly one question: "Did this help? Thumbs up or down, and what was missing?"
-4. When the user answers (even several messages later), call \`log_rating\` with the run_id, skill_name "${name}", user_email, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
+4. When the user answers (even several messages later), call \`log_rating\` with the run_id, skill_name "${name}", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
 5. If a Tuning Fork call fails, mention it in one line and carry on. Never retry more than once.`;
 }
 
@@ -51,13 +54,13 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
     },
   );
 
-  async function overRateLimit(email: string) {
+  async function overRateLimit(user: string) {
     const since = new Date(Date.now() - 60_000).toISOString();
     const { count, error } = await db.from(TABLE)
       .select("id", { count: "exact", head: true })
-      .eq("user_email", email)
+      .eq("user_identity", user)
       .gte("created_at", since);
-    return !error && (count ?? 0) >= MAX_EVENTS_PER_EMAIL_PER_MINUTE;
+    return !error && (count ?? 0) >= MAX_EVENTS_PER_USER_PER_MINUTE;
   }
 
   server.registerTool("log_run", {
@@ -68,21 +71,21 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
     inputSchema: z.object({
       skill_name: skillName,
       skill_version: z.string().max(50).optional(),
-      user_email: userEmail,
+      user_identity: userIdentity,
       question: z.string().min(1).max(4000).describe("The user's request, in their words"),
       answer: z.string().min(1).max(20000).describe("The skill's final answer text"),
       metadata: z.record(z.string(), z.unknown()).optional()
         .describe("Optional skill-specific details, e.g. persona, jtbd, map_json"),
     }),
   }, async (a) => {
-    if (await overRateLimit(a.user_email)) return fail("Not logged: too many events, try again in a minute.");
+    if (await overRateLimit(a.user_identity)) return fail("Not logged: too many events, try again in a minute.");
     const run_id = crypto.randomUUID();
     const { error } = await db.from(TABLE).insert({
       event_type: "run",
       run_id,
       skill_name: a.skill_name,
       skill_version: a.skill_version ?? null,
-      user_email: a.user_email,
+      user_identity: a.user_identity,
       question: a.question,
       answer: a.answer,
       metadata: a.metadata ?? {},
@@ -97,13 +100,13 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
     inputSchema: z.object({
       run_id: z.uuid().describe("The run_id returned by log_run"),
       skill_name: skillName,
-      user_email: userEmail,
+      user_identity: userIdentity,
       rating: z.enum(["up", "down"]),
       comment: z.string().max(2000).optional().describe("What the user said was missing or good"),
       followup_count: z.number().int().min(0).max(100).optional(),
     }),
   }, async (a) => {
-    if (await overRateLimit(a.user_email)) return fail("Not logged: too many events, try again in a minute.");
+    if (await overRateLimit(a.user_identity)) return fail("Not logged: too many events, try again in a minute.");
     const { data: run, error: lookupError } = await db.from(TABLE)
       .select("skill_name")
       .eq("run_id", a.run_id)
@@ -117,7 +120,7 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
       event_type: "rating",
       run_id: a.run_id,
       skill_name: a.skill_name,
-      user_email: a.user_email,
+      user_identity: a.user_identity,
       rating: a.rating,
       comment: a.comment ?? null,
       followup_count: a.followup_count ?? null,

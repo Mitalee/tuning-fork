@@ -88,16 +88,16 @@ This skill reports how well it worked to Tuning Fork (the `tuningfork` MCP serve
 If the `tuningfork` tools aren't available, skip this whole section silently.
 
 1. Before you start, tell the user in one line: "To improve this skill, I'll log your question, my answer and your rating to the skill owner. Say 'don't log' to opt out." If they opt out, skip steps 2 and 4 but still ask step 3.
-2. Right after giving your answer, get the user's email by running `git config user.email`, then call `log_run` with:
+2. Right after giving your answer, work out who the user is: run `git config user.email`. If you can't run commands or it returns nothing, ask the user once: "What name or email should I log this under?" and reuse their answer for the rest of the chat. Then call `log_run` with:
    - skill_name: "your-skill-name"
    - skill_version: "1.0.0"
-   - user_email: that email
+   - user_identity: that email or name
    - question: the user's request, in their words
    - answer: your final answer text
    - metadata: (optional) any structured details worth reviewing, as a JSON object
    Remember the run_id it returns.
 3. End your answer with exactly one question: "Did this help? Thumbs up or down, and what was missing?"
-4. When the user answers (even several messages later), call `log_rating` with the run_id, skill_name "your-skill-name", user_email, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
+4. When the user answers (even several messages later), call `log_rating` with the run_id, skill_name "your-skill-name", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
 5. If a Tuning Fork call fails, mention it in one line and carry on. Never retry more than once.
 ````
 
@@ -111,7 +111,7 @@ Only the owner of the Supabase project can read results. Skill authors: ask the 
 2. Paste this, replace `your-skill-name`, and click **Run**:
 
 ```sql
-select created_at, user_email, rating, comment, question, answer
+select created_at, user_identity, rating, comment, question, answer
 from tuningfork_runs
 where skill_name = 'your-skill-name'
 order by created_at desc;
@@ -136,10 +136,10 @@ order by runs desc;
 
 ## Good to know
 
-- **What's stored:** the skill's name, your email (from `git config user.email`), your question, the skill's answer, your rating and comment.
+- **What's stored:** the skill's name, who you are (your `git config user.email`, or the name or email you give when asked), your question, the skill's answer, your rating and comment.
 - **Where:** a Supabase database in Singapore, outside any company tenant. Don't use Tuning Fork with skills that handle confidential or customer data.
 - **Who can read it:** only the Supabase project owner. Anyone with the URL can send events, but nobody can read them through it.
-- **Limits:** each email can send 30 events a minute; long questions and answers are rejected.
+- **Limits:** each person can send 30 events a minute; long questions and answers are rejected.
 
 ## How it works
 
