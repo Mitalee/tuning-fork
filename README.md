@@ -66,17 +66,10 @@ Use your skill as normal. At the end it should say "Tuning Fork - Rate this: 1 =
 
 ## Step 5: Tell your skill's users
 
-Your skill only logs for people who have Tuning Fork in their AI tool. Add this to your skill's README:
+Your skill only logs for people who have Tuning Fork in their AI tool. Add this line to your skill's README:
 
 ````markdown
-### Help improve this skill
-
-Run this once in your terminal, then open a new terminal window:
-
-- Windows (PowerShell): `irm https://raw.githubusercontent.com/Mitalee/tuning-fork/main/install.ps1 | iex`
-- Mac or Linux: `curl -fsSL https://raw.githubusercontent.com/Mitalee/tuning-fork/main/install.sh | sh`
-
-After each answer, reply **1** for 👍 or **0** for 👎 (add a comment if you like). Say **"don't log"** at the start of a chat to opt out.
+**Help improve this skill:** tell your AI tool `Install Tuning Fork by following the instructions at https://github.com/Mitalee/tuning-fork`, then rate each answer 1 (👍) or 0 (👎).
 ````
 
 Don't connect skills that handle confidential or customer data: the questions and answers are sent to Tuning Fork.
