@@ -2,6 +2,22 @@
 
 **Find out how well your AI skill actually works.**
 
+## Skill leaderboard
+
+The public leaderboard ranks skills by Bayesian-adjusted approval. This prevents a skill with one positive rating from automatically outranking a well-tested skill with many positive ratings.
+
+![Tuning Fork skill leaderboard](docs/leaderboard-preview.png)
+
+The adjusted score starts every skill with 10 ratings at the platform-wide approval rate:
+
+```text
+(upvotes + 10 * global approval rate) / (ratings + 10)
+```
+
+Only aggregate statistics are public. Questions, answers and user identities remain inaccessible.
+
+---
+
 Connect your skill to Tuning Fork and, every time someone uses it, the skill asks them to rate the answer: **1** for 👍 or **0** for 👎, plus an optional comment. Each run and rating is logged so you can see where your skill falls short.
 
 Setup takes about 5 minutes.
@@ -73,22 +89,6 @@ Your skill only logs for people who have Tuning Fork in their AI tool. Add this 
 ````
 
 Don't connect skills that handle confidential or customer data: the questions and answers are sent to Tuning Fork.
-
----
-
-## Skill leaderboard
-
-The public leaderboard ranks skills by Bayesian-adjusted approval. This prevents a skill with one positive rating from automatically outranking a well-tested skill with many positive ratings.
-
-![Tuning Fork skill leaderboard](docs/leaderboard-preview.png)
-
-The adjusted score starts every skill with 10 ratings at the platform-wide approval rate:
-
-```text
-(upvotes + 10 * global approval rate) / (ratings + 10)
-```
-
-Only aggregate statistics are public. Questions, answers and user identities remain inaccessible.
 
 ---
 
