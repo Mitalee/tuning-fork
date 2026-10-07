@@ -47,7 +47,7 @@ You should see `log_run`, `log_rating` and `connect_skill`.
 In Copilot CLI or Claude Code, say (with your skill's name):
 
 ```text
-Connect my skill customer-journey-map to Tuning Fork
+Connect my skill <your skill name> to Tuning Fork via https://github.com/Mitalee/tuning-fork
 ```
 
 It finds the skill, adds a short "Tuning Fork feedback" section to the end of its `SKILL.md`, and shows you what it added. If it can't find the skill, it asks you where it is.
