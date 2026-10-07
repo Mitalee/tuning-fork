@@ -47,7 +47,7 @@ List the tools from the tuningfork MCP server.
 
 You should see `log_run`, `log_rating` and `connect_skill`.
 
-That's it. When you use a skill that's connected to Tuning Fork, it will tell you it's logging and ask for a thumbs up or down at the end. Say **"don't log"** at the start of any chat to opt out.
+That's it. When you use a skill that's connected to Tuning Fork, it will tell you it's logging and, at the end, ask you to rate the answer. Type **1** for 👍 or **0** for 👎, optionally followed by a comment (for example `0 missed the pricing step`). Say **"don't log"** at the start of any chat to opt out.
 
 ---
 
@@ -75,7 +75,7 @@ Commit SKILL.md with the message "Connect skill to Tuning Fork" and push it.
 
 ### Step 4: Try it once
 
-Use your skill as normal. At the end it should ask "Did this help? Thumbs up or down, and what was missing?" Answer it. Your run is now in Tuning Fork.
+Use your skill as normal. At the end it should say "Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)". Reply with `1` or `0`. Your run is now in Tuning Fork.
 
 ### No AI tool handy? Add it by hand
 
@@ -96,8 +96,8 @@ If the `tuningfork` tools aren't available, skip this whole section silently.
    - answer: your final answer text
    - metadata: (optional) any structured details worth reviewing, as a JSON object
    Remember the run_id it returns.
-3. End your answer with exactly one question: "Did this help? Thumbs up or down, and what was missing?"
-4. When the user answers (even several messages later), call `log_rating` with the run_id, skill_name "your-skill-name", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
+3. End your answer with exactly this line, on its own: "Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)"
+4. When the user replies with a message that starts with 1 or 0 (even several messages later), treat it as their rating: 1 means "up", 0 means "down", and any words after the number are their comment. Then call `log_rating` with the run_id, skill_name "your-skill-name", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
 5. If a Tuning Fork call fails, mention it in one line and carry on. Never retry more than once.
 ````
 

@@ -38,8 +38,8 @@ If the \`tuningfork\` tools aren't available, skip this whole section silently.
    - answer: your final answer text
    - metadata: (optional) any structured details worth reviewing, as a JSON object
    Remember the run_id it returns.
-3. End your answer with exactly one question: "Did this help? Thumbs up or down, and what was missing?"
-4. When the user answers (even several messages later), call \`log_rating\` with the run_id, skill_name "${name}", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
+3. End your answer with exactly this line, on its own: "Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)"
+4. When the user replies with a message that starts with 1 or 0 (even several messages later), treat it as their rating: 1 means "up", 0 means "down", and any words after the number are their comment. Then call \`log_rating\` with the run_id, skill_name "${name}", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
 5. If a Tuning Fork call fails, mention it in one line and carry on. Never retry more than once.`;
 }
 
@@ -49,7 +49,7 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
     {
       instructions:
         "Tuning Fork records how well AI skills work. Call log_run after a skill gives its answer, " +
-        "then log_rating when the user gives thumbs up or down. Skill authors call connect_skill " +
+        "then log_rating when the user rates it (1 = up, 0 = down). Skill authors call connect_skill " +
         "to get the block to paste into their SKILL.md.",
     },
   );
@@ -96,12 +96,13 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
 
   server.registerTool("log_rating", {
     title: "Log the user's rating",
-    description: "Call when the user gives thumbs up or down on an answer previously logged with log_run.",
+    description: "Call when the user rates an answer previously logged with log_run. They reply 1 (up) or 0 (down).",
     inputSchema: z.object({
       run_id: z.uuid().describe("The run_id returned by log_run"),
       skill_name: skillName,
       user_identity: userIdentity,
-      rating: z.enum(["up", "down"]),
+      rating: z.enum(["up", "down", "1", "0"]).transform((r) => (r === "1" ? "up" : r === "0" ? "down" : r))
+        .describe('"up" or "down". The user\'s 1 means "up" and 0 means "down".'),
       comment: z.string().max(2000).optional().describe("What the user said was missing or good"),
       followup_count: z.number().int().min(0).max(100).optional(),
     }),
