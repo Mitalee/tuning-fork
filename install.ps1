@@ -56,8 +56,8 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
 Write-Host ""
 if ($found) {
     Write-Host "Done. Open a new PowerShell window and start Copilot CLI or Claude Code."
-    Write-Host "Using Claude desktop or claude.ai? See https://github.com/Mitalee/tuning-fork#i-use-skills"
+    Write-Host "Using Claude desktop or claude.ai? See https://github.com/Mitalee/tuning-fork"
 } else {
     Write-Host "Didn't find Copilot CLI or Claude Code on this computer."
-    Write-Host "Install one first, or follow https://github.com/Mitalee/tuning-fork#i-use-skills"
+    Write-Host "Install one first, or follow https://github.com/Mitalee/tuning-fork"
 }

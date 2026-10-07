@@ -57,8 +57,8 @@ fi
 echo
 if [ "$FOUND" = 1 ]; then
   echo "Done. Open a new terminal and start Copilot CLI or Claude Code."
-  echo "Using Claude desktop or claude.ai? See https://github.com/Mitalee/tuning-fork#i-use-skills"
+  echo "Using Claude desktop or claude.ai? See https://github.com/Mitalee/tuning-fork"
 else
   echo "Didn't find Copilot CLI or Claude Code on this computer."
-  echo "Install one first, or follow https://github.com/Mitalee/tuning-fork#i-use-skills"
+  echo "Install one first, or follow https://github.com/Mitalee/tuning-fork"
 fi
