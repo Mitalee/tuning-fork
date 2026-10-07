@@ -1,0 +1,11 @@
+# Supabase CLI link state and local secrets
+supabase/.temp/
+supabase/.branches/
+.env
+.env.*
+supabase/functions/**/.env
+
+# Lockfile can contain internal registry mirror URLs; Supabase resolves deps on deploy
+deno.lock
+
+node_modules/
