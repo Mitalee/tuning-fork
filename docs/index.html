@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; connect-src https://ziwygmfxsynuccngnehe.supabase.co; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
+  >
+  <title>Tuning Fork Skill Leaderboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #09090b;
+      --panel: #18181b;
+      --border: #3f3f46;
+      --muted: #a1a1aa;
+      --text: #fafafa;
+      --accent: #a3e635;
+      --danger: #fda4af;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(163, 230, 53, .12), transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(1050px, calc(100% - 2rem)); margin: 0 auto; padding: 5rem 0; }
+    header { margin-bottom: 2rem; }
+    .eyebrow {
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 { margin: .5rem 0; font-size: clamp(2.2rem, 7vw, 4.8rem); letter-spacing: -.06em; }
+    header p { max-width: 680px; margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .3);
+    }
+    table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+    th, td { padding: 1rem 1.1rem; border-bottom: 1px solid rgba(63, 63, 70, .65); text-align: right; }
+    th {
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    th:nth-child(2), td:nth-child(2) { text-align: left; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: rgba(255, 255, 255, .025); }
+    .rank { width: 4rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .skill { max-width: 24rem; overflow: hidden; font-weight: 700; text-overflow: ellipsis; }
+    .score { color: var(--accent); font-weight: 800; }
+    .message { padding: 4rem; color: var(--muted); text-align: center !important; }
+    .error { color: var(--danger); }
+    footer { margin-top: 1.25rem; color: var(--muted); font-size: .82rem; line-height: 1.5; }
+    @media (max-width: 640px) {
+      main { width: min(100% - 1rem, 1050px); padding: 3rem 0; }
+      th, td { padding: .85rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">Tuning Fork</div>
+      <h1>Skill leaderboard</h1>
+      <p>Skills ranked by Bayesian-adjusted approval, balancing positive ratings with the amount of evidence behind them.</p>
+    </header>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Skill</th>
+            <th scope="col">Adjusted score</th>
+            <th scope="col">Approval</th>
+            <th scope="col">Up / down</th>
+            <th scope="col">Ratings</th>
+            <th scope="col">Runs</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard">
+          <tr><td class="message" colspan="7">Loading leaderboard...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <footer>
+      Adjusted score starts each skill with 10 ratings at the platform-wide average. Only aggregate statistics are public.
+    </footer>
+  </main>
+  <script>
+    const endpoint = "https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/leaderboard";
+    const leaderboard = document.querySelector("#leaderboard");
+    const number = new Intl.NumberFormat();
+
+    function percentage(value) {
+      return value === null ? "\u2014" : `${Number(value).toFixed(1)}%`;
+    }
+
+    function cell(row, value, className) {
+      const element = document.createElement("td");
+      element.textContent = value;
+      if (className) element.className = className;
+      row.append(element);
+    }
+
+    function showMessage(message, isError = false) {
+      const row = document.createElement("tr");
+      const element = document.createElement("td");
+      element.className = `message${isError ? " error" : ""}`;
+      element.colSpan = 7;
+      element.textContent = message;
+      row.append(element);
+      leaderboard.replaceChildren(row);
+    }
+
+    fetch(endpoint)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+        return response.json();
+      })
+      .then((rows) => {
+        if (!rows.length) {
+          showMessage("No skill runs have been logged yet.");
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        for (const item of rows) {
+          const row = document.createElement("tr");
+          cell(row, item.rank, "rank");
+          cell(row, item.skill_name, "skill");
+          cell(row, percentage(item.bayesian_score), "score");
+          cell(row, percentage(item.approval_rate));
+          cell(row, `${number.format(item.upvotes)} / ${number.format(item.downvotes)}`);
+          cell(row, number.format(item.rated_runs));
+          cell(row, number.format(item.total_runs));
+          fragment.append(row);
+        }
+        leaderboard.replaceChildren(fragment);
+      })
+      .catch((error) => {
+        console.error(error);
+        showMessage("The leaderboard could not be loaded. Please try again shortly.", true);
+      });
+  </script>
+</body>
+</html>
