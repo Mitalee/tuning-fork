@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; connect-src https://ziwygmfxsynuccngnehe.supabase.co; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
+    content="default-src 'none'; connect-src https://ziwygmfxsynuccngnehe.supabase.co; img-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
   >
+  <link rel="icon" href="./tuning-fork.svg?v=20261007-3" type="image/svg+xml" sizes="any">
   <title>Tuning Fork Skill Leaderboard</title>
   <style>
     :root {
@@ -31,6 +32,13 @@
     }
     main { width: min(1050px, calc(100% - 2rem)); margin: 0 auto; padding: 5rem 0; }
     header { margin-bottom: 2rem; }
+    .brand { display: flex; align-items: center; gap: 1.25rem; }
+    .brand-icon {
+      width: clamp(3.75rem, 9vw, 5rem);
+      height: clamp(3.75rem, 9vw, 5rem);
+      flex: 0 0 auto;
+      filter: drop-shadow(0 12px 28px rgba(163, 230, 53, .18));
+    }
     .eyebrow {
       color: var(--accent);
       font-size: .78rem;
@@ -66,6 +74,7 @@
     footer { margin-top: 1.25rem; color: var(--muted); font-size: .82rem; line-height: 1.5; }
     @media (max-width: 640px) {
       main { width: min(100% - 1rem, 1050px); padding: 3rem 0; }
+      .brand { align-items: flex-start; gap: 1rem; }
       th, td { padding: .85rem; }
     }
   </style>
@@ -73,8 +82,13 @@
 <body>
   <main>
     <header>
-      <div class="eyebrow">Tuning Fork</div>
-      <h1>Skill leaderboard</h1>
+      <div class="brand">
+        <img class="brand-icon" src="tuning-fork.svg" alt="">
+        <div>
+          <div class="eyebrow">Tuning Fork</div>
+          <h1>Skill leaderboard</h1>
+        </div>
+      </div>
       <p>Skills ranked by Bayesian-adjusted approval, balancing positive ratings with the amount of evidence behind them.</p>
     </header>
     <div class="table-wrap">
