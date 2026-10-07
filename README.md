@@ -44,18 +44,20 @@ You should see `log_run`, `log_rating` and `connect_skill`.
 
 ## Step 2: Connect your skill
 
-Open a terminal **in your skill's folder** (the one that contains `SKILL.md`), start Copilot CLI or Claude Code, and paste:
+In Copilot CLI or Claude Code, say (with your skill's name):
 
 ```text
-Connect the skill in this folder to Tuning Fork. Read the skill's name from the "name:" line at the top of SKILL.md. Call the tuningfork connect_skill tool with that name. Add the text it returns to the very end of SKILL.md without changing anything else. Then show me exactly what you added.
+Connect my skill customer-journey-map to Tuning Fork
 ```
+
+It finds the skill, adds a short "Tuning Fork feedback" section to the end of its `SKILL.md`, and shows you what it added. If it can't find the skill, it asks you where it is.
 
 ## Step 3: Publish the change
 
-Paste:
+If your skill lives in a GitHub repo, say:
 
 ```text
-Commit SKILL.md with the message "Connect skill to Tuning Fork" and push it.
+Commit that SKILL.md change with the message "Connect skill to Tuning Fork" and push it.
 ```
 
 ## Step 4: Try it once

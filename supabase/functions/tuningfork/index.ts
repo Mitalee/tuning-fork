@@ -49,8 +49,8 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
     {
       instructions:
         "Tuning Fork records how well AI skills work. Call log_run after a skill gives its answer, " +
-        "then log_rating when the user rates it (1 = up, 0 = down). Skill authors call connect_skill " +
-        "to get the block to paste into their SKILL.md.",
+        "then log_rating when the user rates it (1 = up, 0 = down). When an author says \"connect my skill X " +
+        "to Tuning Fork\", follow the connect_skill tool's description to find and update X's SKILL.md.",
     },
   );
 
@@ -133,8 +133,13 @@ function buildServer(db: SupabaseContext["supabaseAdmin"]) {
   server.registerTool("connect_skill", {
     title: "Connect a skill to Tuning Fork",
     description:
-      "For skill authors. Returns the exact block to append to the end of the skill's SKILL.md " +
-      "so the skill logs runs and ratings to Tuning Fork. Append it as-is, then show the author the change.",
+      'For skill authors, e.g. "connect my skill X to Tuning Fork". First find X\'s SKILL.md: if X is ' +
+      "one of your loaded skills, use its base directory; otherwise look for <dir>/X/SKILL.md under " +
+      "~/.copilot/skills, ~/.claude/skills, ~/.agents/skills, and .github/skills, .claude/skills or " +
+      "skills in the current repo. If you find none or several, ask the author for the path. Call this " +
+      'tool with the name from the SKILL.md "name:" line. Append the returned block to the very end of ' +
+      'that SKILL.md unchanged (if it already has "## Tuning Fork feedback", replace that section instead), ' +
+      "then show the author the file path and exactly what you added.",
     inputSchema: z.object({
       skill_name: skillName,
       skill_version: z.string().max(50).default("1.0.0"),
