@@ -38,7 +38,7 @@ If the \`tuningfork\` tools aren't available, skip this whole section silently.
    - answer: your final answer text
    - metadata: (optional) any structured details worth reviewing, as a JSON object
    Remember the run_id it returns.
-3. End your answer with exactly this line, on its own: "Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)"
+3. End your answer with exactly this line, on its own: "Tuning Fork - Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)"
 4. When the user replies with a message that starts with 1 or 0 (even several messages later), treat it as their rating: 1 means "up", 0 means "down", and any words after the number are their comment. Then call \`log_rating\` with the run_id, skill_name "${name}", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
 5. If a Tuning Fork call fails, mention it in one line and carry on. Never retry more than once.`;
 }

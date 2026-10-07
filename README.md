@@ -10,7 +10,15 @@ Setup takes about 5 minutes.
 
 ## Step 1: Add Tuning Fork to your AI tool
 
-Run one line in your terminal (not inside your AI tool). It adds Tuning Fork to GitHub Copilot CLI and/or Claude Code, whichever you have, and stops them asking for approval every time your skill logs.
+**Easiest:** inside GitHub Copilot CLI or Claude Code, paste:
+
+```text
+Install Tuning Fork by following the instructions at https://github.com/Mitalee/tuning-fork
+```
+
+Approve the install command when asked, then restart your AI tool.
+
+**Or** run one line in your terminal (not inside your AI tool). It adds Tuning Fork to GitHub Copilot CLI and/or Claude Code, whichever you have, and stops them asking for approval every time your skill logs.
 
 Windows (PowerShell):
 
@@ -52,7 +60,7 @@ Commit SKILL.md with the message "Connect skill to Tuning Fork" and push it.
 
 ## Step 4: Try it once
 
-Use your skill as normal. At the end it should say "Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)". Reply with `1` or `0`.
+Use your skill as normal. At the end it should say "Tuning Fork - Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)". Reply with `1` or `0`.
 
 ## Step 5: Tell your skill's users
 
@@ -99,7 +107,7 @@ If the `tuningfork` tools aren't available, skip this whole section silently.
    - answer: your final answer text
    - metadata: (optional) any structured details worth reviewing, as a JSON object
    Remember the run_id it returns.
-3. End your answer with exactly this line, on its own: "Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)"
+3. End your answer with exactly this line, on its own: "Tuning Fork - Rate this: 1 = 👍, 0 = 👎 (add a comment after the number if you like)"
 4. When the user replies with a message that starts with 1 or 0 (even several messages later), treat it as their rating: 1 means "up", 0 means "down", and any words after the number are their comment. Then call `log_rating` with the run_id, skill_name "your-skill-name", user_identity, rating "up" or "down", comment (their words, if any) and followup_count (how many follow-up questions they asked).
 5. If a Tuning Fork call fails, mention it in one line and carry on. Never retry more than once.
 ````
