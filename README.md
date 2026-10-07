@@ -16,19 +16,42 @@ Pick what describes you:
 
 ### Step 1: Add Tuning Fork to your AI tool
 
-Copy the line for the tool you use.
+**GitHub Copilot CLI or Claude Code:** run one line in your terminal (not inside your AI tool). It adds Tuning Fork to whichever of the two you have, and stops it asking for approval every time a skill logs.
 
-**GitHub Copilot CLI:** paste this into your terminal (not inside Copilot):
+Windows (PowerShell):
+
+```text
+irm https://raw.githubusercontent.com/Mitalee/tuning-fork/main/install.ps1 | iex
+```
+
+Mac or Linux:
+
+```text
+curl -fsSL https://raw.githubusercontent.com/Mitalee/tuning-fork/main/install.sh | sh
+```
+
+Then open a new terminal window. On Windows, start Copilot CLI from PowerShell (not Command Prompt) so approvals stay off.
+
+<details>
+<summary>Prefer to set it up by hand, or keep approving each time?</summary>
+
+**GitHub Copilot CLI:** paste this into your terminal:
 
 ```text
 copilot mcp add --transport http tuningfork https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/tuningfork
 ```
 
+To skip approvals for one session, start Copilot with `copilot --allow-tool "tuningfork"`.
+
 **Claude Code:** paste this into your terminal:
 
 ```text
-claude mcp add --transport http tuningfork https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/tuningfork
+claude mcp add --transport http --scope user tuningfork https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/tuningfork
 ```
+
+To skip approvals, add `"mcp__tuningfork"` to `permissions.allow` in `~/.claude/settings.json`.
+
+</details>
 
 **Claude desktop app or claude.ai:**
 
@@ -36,6 +59,7 @@ claude mcp add --transport http tuningfork https://ziwygmfxsynuccngnehe.supabase
 2. Name: `Tuning Fork`
 3. URL: `https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/tuningfork`
 4. Click **Add**.
+5. The first time each Tuning Fork tool asks for permission, click **Always allow**.
 
 ### Step 2: Check it worked
 
