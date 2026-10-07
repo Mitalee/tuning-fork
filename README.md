@@ -78,11 +78,6 @@ Don't connect skills that handle confidential or customer data: the questions an
 
 ## Prefer to do it by hand?
 
-**Add Tuning Fork without the installer**
-
-- GitHub Copilot CLI: `copilot mcp add --transport http tuningfork https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/tuningfork`, then start Copilot with `copilot --allow-tool "tuningfork"` to skip approvals.
-- Claude Code: `claude mcp add --transport http --scope user tuningfork https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/tuningfork`, then add `"mcp__tuningfork"` to `permissions.allow` in `~/.claude/settings.json` to skip approvals.
-
 **Connect your skill without an AI tool**
 
 Copy the block below to the very end of your `SKILL.md`. Replace `your-skill-name` (it appears twice) with the `name:` from the top of your `SKILL.md`.
