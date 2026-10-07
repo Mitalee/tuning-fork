@@ -80,6 +80,8 @@ Don't connect skills that handle confidential or customer data: the questions an
 
 The public leaderboard ranks skills by Bayesian-adjusted approval. This prevents a skill with one positive rating from automatically outranking a well-tested skill with many positive ratings.
 
+![Tuning Fork skill leaderboard](docs/leaderboard-preview.png)
+
 The adjusted score starts every skill with 10 ratings at the platform-wide approval rate:
 
 ```text
@@ -87,25 +89,6 @@ The adjusted score starts every skill with 10 ratings at the platform-wide appro
 ```
 
 Only aggregate statistics are public. Questions, answers and user identities remain inaccessible.
-
-The Supabase Edge Function exposes aggregate leaderboard data as JSON:
-
-```text
-https://ziwygmfxsynuccngnehe.supabase.co/functions/v1/leaderboard
-```
-
-The public page is in `docs/index.html`, ready for GitHub Pages. Deploy the API with:
-
-```text
-supabase db push
-supabase functions deploy leaderboard
-```
-
-Then enable GitHub Pages for the repository using the `main` branch and `/docs` folder. The page will be:
-
-```text
-https://mitalee.github.io/tuning-fork/
-```
 
 ---
 
